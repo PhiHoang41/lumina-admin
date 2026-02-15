@@ -4,6 +4,8 @@ import AdminLayout from "./layouts/AdminLayout";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import AddProductPage from "./pages/ProductManagement/AddProductPage/AddProductPage";
 import ProductListPage from "./pages/ProductManagement/ProductListPage/ProductListPage";
+import CategoryListPage from "./pages/CategoryManagement/CategoryListPage/CategoryListPage";
+import CategoryFormPage from "./pages/CategoryManagement/CategoryFormPage/CategoryFormPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -35,6 +37,18 @@ const App = () => {
         {
           path: "products",
           element: <ProductListPage />,
+        },
+        {
+          path: "categories/add",
+          element: <CategoryFormPage />,
+        },
+        {
+          path: "categories/edit/:id",
+          element: <CategoryFormPage />,
+        },
+        {
+          path: "categories",
+          element: <CategoryListPage />,
         },
       ],
     },

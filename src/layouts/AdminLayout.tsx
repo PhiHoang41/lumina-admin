@@ -51,14 +51,14 @@ const AdminLayout = () => {
       label: "Category",
       children: [
         {
-          key: "/category/add",
+          key: "/categories/add",
           icon: <PlusOutlined />,
-          label: <Link to="/category/add">Add Category</Link>,
+          label: <Link to="/categories/add">Add Category</Link>,
         },
         {
-          key: "/category",
+          key: "/categories",
           icon: <UnorderedListOutlined />,
-          label: <Link to="/category">Category List</Link>,
+          label: <Link to="/categories">Category List</Link>,
         },
       ],
     },
