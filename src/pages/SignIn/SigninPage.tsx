@@ -1,20 +1,32 @@
-import { Form, Input, Button } from "antd";
-import { useState } from "react";
+import { Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { login, type LoginRequest } from "../../services/authService";
+import { setToken } from "../../utils/token";
 
 const SigninPage = () => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const onFinish = async (values: { email: string; password: string }) => {
-    setLoading(true);
-    console.log("Login values:", values);
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      message.success("Đăng nhập thành công!");
+      if (data.data.user.role === "ADMIN") {
+        setToken(data.data.accessToken);
+        navigate("/dashboard");
+      } else {
+        message.error("Bạn không có quyền truy cập trang quản trị");
+      }
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || "Đăng nhập thất bại");
+    },
+  });
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      console.log("Login successful!");
-    }, 1000);
+  const onFinish = (values: LoginRequest) => {
+    loginMutation.mutate(values);
   };
 
   return (
@@ -60,7 +72,7 @@ const SigninPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              loading={loading}
+              loading={loginMutation.isPending}
               block
               size="large"
             >

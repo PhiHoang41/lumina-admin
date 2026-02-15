@@ -1,4 +1,12 @@
-import { Layout, Menu, Dropdown, Avatar, type MenuProps } from "antd";
+import {
+  Layout,
+  Menu,
+  Dropdown,
+  Avatar,
+  type MenuProps,
+  Modal,
+  message,
+} from "antd";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   DashboardOutlined,
@@ -11,6 +19,9 @@ import {
   GiftOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { logout } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
 
 const { Header, Content, Sider } = Layout;
 
@@ -18,6 +29,15 @@ const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const location = useLocation();
+  const { user, isLoading } = useAuth();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => logout(),
+    onSuccess: () => {
+      message.success("Đăng xuất thành công!");
+      window.location.href = "/login";
+    },
+  });
 
   const menuItems = [
     {
@@ -31,14 +51,14 @@ const AdminLayout = () => {
       label: "Category",
       children: [
         {
-          key: "/category/add",
+          key: "/categories/add",
           icon: <PlusOutlined />,
-          label: <Link to="/category/add">Add Category</Link>,
+          label: <Link to="/categories/add">Add Category</Link>,
         },
         {
-          key: "/category",
+          key: "/categories",
           icon: <UnorderedListOutlined />,
-          label: <Link to="/category">Category List</Link>,
+          label: <Link to="/categories">Category List</Link>,
         },
       ],
     },
@@ -79,7 +99,15 @@ const AdminLayout = () => {
   ];
 
   const handleLogout = () => {
-    console.log("Logout");
+    Modal.confirm({
+      title: "Xác nhận đăng xuất",
+      content: "Bạn có chắc chắn muốn đăng xuất?",
+      okText: "Đăng xuất",
+      cancelText: "Hủy",
+      onOk: () => {
+        logoutMutation.mutate();
+      },
+    });
   };
 
   const dropdownItems: MenuProps["items"] = [
@@ -124,10 +152,10 @@ const AdminLayout = () => {
               <Avatar size={32} icon={<UserOutlined />} />
               <div>
                 <div className="text-sm font-medium text-gray-900">
-                  John Doe
+                  {isLoading ? "Loading..." : user?.fullName || "Admin"}
                 </div>
                 <div className="text-xs text-gray-500">
-                  john.doe@example.com
+                  {isLoading ? "" : user?.email || "admin@lumina.com"}
                 </div>
               </div>
             </div>
