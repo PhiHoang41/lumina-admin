@@ -4,6 +4,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import AddProductPage from "./pages/ProductManagement/AddProductPage/AddProductPage";
 import ProductListPage from "./pages/ProductManagement/ProductListPage/ProductListPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -13,7 +14,11 @@ const App = () => {
     },
     {
       path: "/",
-      element: <AdminLayout />,
+      element: (
+        <ProtectedRoute>
+          <AdminLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           index: true,
