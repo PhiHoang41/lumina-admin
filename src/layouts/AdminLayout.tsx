@@ -10,8 +10,6 @@ import {
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   DashboardOutlined,
-  PlusOutlined,
-  UnorderedListOutlined,
   UserOutlined,
   LogoutOutlined,
   AppstoreOutlined,
@@ -27,7 +25,6 @@ const { Header, Content, Sider } = Layout;
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
   const location = useLocation();
   const { user, isLoading } = useAuth();
 
@@ -46,55 +43,19 @@ const AdminLayout = () => {
       label: <Link to="/dashboard">Dashboard</Link>,
     },
     {
-      key: "category-submenu",
+      key: "/categories",
       icon: <AppstoreOutlined />,
-      label: "Category",
-      children: [
-        {
-          key: "/categories/add",
-          icon: <PlusOutlined />,
-          label: <Link to="/categories/add">Add Category</Link>,
-        },
-        {
-          key: "/categories",
-          icon: <UnorderedListOutlined />,
-          label: <Link to="/categories">Category List</Link>,
-        },
-      ],
+      label: <Link to="/categories">Categories</Link>,
     },
     {
-      key: "product-submenu",
+      key: "/products",
       icon: <ShoppingOutlined />,
-      label: "Product",
-      children: [
-        {
-          key: "/products/add",
-          icon: <PlusOutlined />,
-          label: <Link to="/products/add">Add Product</Link>,
-        },
-        {
-          key: "/products",
-          icon: <UnorderedListOutlined />,
-          label: <Link to="/products">Product List</Link>,
-        },
-      ],
+      label: <Link to="/products">Products</Link>,
     },
     {
-      key: "coupon-submenu",
+      key: "/coupons",
       icon: <GiftOutlined />,
-      label: "Coupon",
-      children: [
-        {
-          key: "/coupons/add",
-          icon: <PlusOutlined />,
-          label: <Link to="/coupons/add">Add Coupon</Link>,
-        },
-        {
-          key: "/coupons",
-          icon: <UnorderedListOutlined />,
-          label: <Link to="/coupons">Coupon List</Link>,
-        },
-      ],
+      label: <Link to="/coupons">Coupons</Link>,
     },
   ];
 
@@ -137,8 +98,6 @@ const AdminLayout = () => {
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
-          openKeys={openKeys}
-          onOpenChange={setOpenKeys}
           items={menuItems}
           theme="light"
           className="border-r-0 overflow-y-auto"
