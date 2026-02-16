@@ -6,6 +6,8 @@ import ProductFormPage from "./pages/ProductManagement/ProductFormPage/ProductFo
 import ProductListPage from "./pages/ProductManagement/ProductListPage/ProductListPage";
 import CategoryListPage from "./pages/CategoryManagement/CategoryListPage/CategoryListPage";
 import CategoryFormPage from "./pages/CategoryManagement/CategoryFormPage/CategoryFormPage";
+import CouponListPage from "./pages/CouponManagement/CouponListPage/CouponListPage";
+import CouponFormPage from "./pages/CouponManagement/CouponFormPage/CouponFormPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -53,6 +55,18 @@ const App = () => {
         {
           path: "categories",
           element: <CategoryListPage />,
+        },
+        {
+          path: "coupons/add",
+          element: <CouponFormPage />,
+        },
+        {
+          path: "coupons/edit/:id",
+          element: <CouponFormPage />,
+        },
+        {
+          path: "coupons",
+          element: <CouponListPage />,
         },
       ],
     },

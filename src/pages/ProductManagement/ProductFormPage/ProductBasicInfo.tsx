@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Select, Switch } from "antd";
+import { Form, Input, Select, Switch } from "antd";
 
 const { TextArea } = Input;
 const { Option } = Select;
