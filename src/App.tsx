@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SigninPage from "./pages/SignIn/SigninPage";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
-import AddProductPage from "./pages/ProductManagement/AddProductPage/AddProductPage";
+import ProductFormPage from "./pages/ProductManagement/ProductFormPage/ProductFormPage";
 import ProductListPage from "./pages/ProductManagement/ProductListPage/ProductListPage";
 import CategoryListPage from "./pages/CategoryManagement/CategoryListPage/CategoryListPage";
 import CategoryFormPage from "./pages/CategoryManagement/CategoryFormPage/CategoryFormPage";
@@ -32,7 +32,11 @@ const App = () => {
         },
         {
           path: "products/add",
-          element: <AddProductPage />,
+          element: <ProductFormPage />,
+        },
+        {
+          path: "products/edit/:id",
+          element: <ProductFormPage />,
         },
         {
           path: "products",

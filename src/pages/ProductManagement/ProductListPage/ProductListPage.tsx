@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, Table, Button, Tag, Dropdown, Modal, message, Spin } from "antd";
+import { Card, Table, Button, Tag, Dropdown, Modal, message } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   MoreOutlined,
-  PoweroffOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuProps } from "antd";
@@ -45,19 +44,6 @@ const ProductListPage = () => {
     },
   });
 
-  const toggleStatusMutation = useMutation({
-    mutationFn: productService.toggleProductStatus,
-    onSuccess: () => {
-      message.success("Đã cập nhật trạng thái sản phẩm!");
-      refetch();
-    },
-    onError: (error: any) => {
-      message.error(
-        error.response?.data?.message || "Lỗi khi cập nhật trạng thái",
-      );
-    },
-  });
-
   const handleDelete = (id: string) => {
     Modal.confirm({
       title: "Xác nhận xóa",
@@ -69,10 +55,6 @@ const ProductListPage = () => {
         deleteMutation.mutate(id);
       },
     });
-  };
-
-  const handleToggleStatus = (id: string) => {
-    toggleStatusMutation.mutate(id);
   };
 
   const handleEdit = (id: string) => {
@@ -87,15 +69,6 @@ const ProductListPage = () => {
           icon: <EditOutlined />,
           label: "Chỉnh sửa",
           onClick: () => handleEdit(record._id),
-        },
-        {
-          type: "divider",
-        },
-        {
-          key: "toggle",
-          icon: <PoweroffOutlined />,
-          label: record.isActive ? "Tắt kích hoạt" : "Kích hoạt",
-          onClick: () => handleToggleStatus(record._id),
         },
         {
           type: "divider",
@@ -152,23 +125,23 @@ const ProductListPage = () => {
       title: "Danh mục",
       dataIndex: "category",
       width: 150,
-      render: (category: any) => (
-        <span>
-          {typeof category === "object" && category !== null
-            ? category.name
-            : category}
-        </span>
-      ),
+      render: (category: any) => <span>{category.name}</span>,
     },
     {
       title: "Giá",
-      dataIndex: "basePrice",
+      dataIndex: "variants",
       width: 130,
-      render: (basePrice: number) => (
-        <span className="font-semibold text-green-600">
-          {basePrice.toLocaleString("vi-VN")} đ
-        </span>
-      ),
+      render: (variants: any[]) => {
+        if (!variants || variants.length === 0) {
+          return <span className="text-gray-400">-</span>;
+        }
+        const minPrice = Math.min(...variants.map((v) => v.price));
+        return (
+          <span className="font-semibold text-green-600">
+            {minPrice.toLocaleString("vi-VN")} đ
+          </span>
+        );
+      },
     },
     {
       title: "Số lượng",

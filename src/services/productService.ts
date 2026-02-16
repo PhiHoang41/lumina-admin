@@ -12,9 +12,8 @@ export interface Product {
   slug: string;
   description?: string;
   category: Category | string;
-  basePrice: number;
   images: string[];
-  variants: string[];
+  variants: any[];
   isActive: boolean;
   totalStock: number;
   createdAt: string;
@@ -25,7 +24,6 @@ export interface ProductFormData {
   name: string;
   description?: string;
   category: string;
-  basePrice: number;
   images?: string[];
   variants?: any[];
   isActive?: boolean;
@@ -62,8 +60,6 @@ const productService = {
     search?: string;
     category?: string;
     isActive?: boolean;
-    minPrice?: number;
-    maxPrice?: number;
     sortBy?: string;
     sortOrder?: string;
   }): Promise<ProductsResponse> => {
