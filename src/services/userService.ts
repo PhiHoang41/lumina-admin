@@ -84,6 +84,11 @@ const userService = {
     return response.data;
   },
 
+  adminChangePassword: async (id: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.put<{ success: boolean; message: string }>(`/users/${id}/admin-password`, { newPassword });
+    return response.data;
+  },
+
   changeRole: async (id: string, role: string): Promise<UserResponse> => {
     const response = await api.put<UserResponse>(`/users/${id}/role`, { role });
     return response.data;

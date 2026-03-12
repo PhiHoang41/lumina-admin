@@ -30,6 +30,7 @@ import {
   Input,
   Select,
   Avatar,
+  Form,
 } from "antd";
 import {
   SearchOutlined,
@@ -38,6 +39,7 @@ import {
   DeleteOutlined,
   UserOutlined,
   PlusOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuProps } from "antd";
@@ -53,6 +55,9 @@ const UserListPage = () => {
   });
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("");
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [changePasswordForm] = Form.useForm();
   const debouncedSearch = useDebounce(search, 500);
   const { user: currentUser } = useAuth();
 
@@ -96,6 +101,29 @@ const UserListPage = () => {
     },
   });
 
+  const changePasswordMutation = useMutation({
+    mutationFn: (newPassword: string) =>
+      userService.adminChangePassword(selectedUser!._id, newPassword),
+    onSuccess: () => {
+      message.success("Đổi mật khẩu thành công!");
+      setIsChangePasswordOpen(false);
+      changePasswordForm.resetFields();
+      setSelectedUser(null);
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || "Lỗi khi đổi mật khẩu");
+    },
+  });
+
+  const handleOpenChangePassword = (user: User) => {
+    setSelectedUser(user);
+    setIsChangePasswordOpen(true);
+  };
+
+  const handleChangePassword = (values: { newPassword: string; confirmPassword: string }) => {
+    changePasswordMutation.mutate(values.newPassword);
+  };
+
   const handleDelete = (id: string, name: string) => {
     Modal.confirm({
       title: "Xác nhận xóa",
@@ -117,6 +145,12 @@ const UserListPage = () => {
           icon: <EditOutlined />,
           label: "Chỉnh sửa",
           onClick: () => navigate(`/users/edit/${record._id}`),
+        },
+        {
+          key: "changePassword",
+          icon: <LockOutlined />,
+          label: "Đổi mật khẩu",
+          onClick: () => handleOpenChangePassword(record),
         },
         {
           type: "divider",
@@ -272,6 +306,75 @@ const UserListPage = () => {
           scroll={{ x: "max-content" }}
         />
       </Card>
+
+      <Modal
+        title="Đổi mật khẩu"
+        open={isChangePasswordOpen}
+        onCancel={() => {
+          setIsChangePasswordOpen(false);
+          changePasswordForm.resetFields();
+          setSelectedUser(null);
+        }}
+        footer={null}
+        destroyOnClose
+      >
+        <Form
+          form={changePasswordForm}
+          layout="vertical"
+          onFinish={handleChangePassword}
+        >
+          <div className="mb-4">
+            <strong>Tài khoản:</strong> {selectedUser?.fullName}
+            <br />
+            <span className="text-gray-500">Email: {selectedUser?.email}</span>
+          </div>
+
+          <Form.Item
+            label="Mật khẩu mới"
+            name="newPassword"
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu mới" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+            ]}
+          >
+            <Input.Password placeholder="Nhập mật khẩu mới" />
+          </Form.Item>
+
+          <Form.Item
+            label="Xác nhận mật khẩu"
+            name="confirmPassword"
+            dependencies={["newPassword"]}
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Mật khẩu không khớp!"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password placeholder="Nhập lại mật khẩu mới" />
+          </Form.Item>
+
+          <Form.Item className="mb-0">
+            <Space>
+              <Button onClick={() => {
+                setIsChangePasswordOpen(false);
+                changePasswordForm.resetFields();
+                setSelectedUser(null);
+              }}>
+                Hủy
+              </Button>
+              <Button type="primary" htmlType="submit" loading={changePasswordMutation.isPending}>
+                Đổi mật khẩu
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
