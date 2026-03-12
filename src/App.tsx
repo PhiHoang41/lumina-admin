@@ -8,6 +8,8 @@ import CategoryListPage from "./pages/CategoryManagement/CategoryListPage/Catego
 import CategoryFormPage from "./pages/CategoryManagement/CategoryFormPage/CategoryFormPage";
 import CouponListPage from "./pages/CouponManagement/CouponListPage/CouponListPage";
 import CouponFormPage from "./pages/CouponManagement/CouponFormPage/CouponFormPage";
+import UserListPage from "./pages/UserManagement/UserListPage/UserListPage";
+import UserFormPage from "./pages/UserManagement/UserFormPage/UserFormPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -67,6 +69,18 @@ const App = () => {
         {
           path: "coupons",
           element: <CouponListPage />,
+        },
+        {
+          path: "users",
+          element: <UserListPage />,
+        },
+        {
+          path: "users/create",
+          element: <UserFormPage />,
+        },
+        {
+          path: "users/edit/:id",
+          element: <UserFormPage />,
         },
       ],
     },
