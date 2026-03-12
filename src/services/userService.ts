@@ -12,6 +12,16 @@ export interface User {
   updatedAt: string;
 }
 
+export interface CreateUserData {
+  fullName: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+  role: "USER" | "ADMIN";
+  avatar?: string;
+}
+
 export interface UsersResponse {
   success: boolean;
   message: string;
@@ -76,6 +86,11 @@ const userService = {
 
   changeRole: async (id: string, role: string): Promise<UserResponse> => {
     const response = await api.put<UserResponse>(`/users/${id}/role`, { role });
+    return response.data;
+  },
+
+  createUser: async (data: CreateUserData): Promise<UserResponse> => {
+    const response = await api.post<UserResponse>("/users", data);
     return response.data;
   },
 };

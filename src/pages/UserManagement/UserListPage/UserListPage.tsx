@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 const useDebounce = (value: string, delay: number = 500) => {
@@ -36,6 +37,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   UserOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuProps } from "antd";
@@ -44,6 +46,7 @@ import userService, { type User } from "../../../services/userService";
 import { useAuth } from "../../../hooks/useAuth";
 
 const UserListPage = () => {
+  const navigate = useNavigate();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -113,7 +116,7 @@ const UserListPage = () => {
           key: "edit",
           icon: <EditOutlined />,
           label: "Chỉnh sửa",
-          onClick: () => console.log("Edit user:", record._id),
+          onClick: () => navigate(`/users/edit/${record._id}`),
         },
         {
           type: "divider",
@@ -144,20 +147,23 @@ const UserListPage = () => {
       title: "Người dùng",
       key: "user",
       width: 250,
-      render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <Avatar
-            size={40}
-            src={record.avatar}
-            icon={!record.avatar && <UserOutlined />}
-            className="bg-blue-500"
-          />
-          <div>
-            <div className="font-medium">{record.fullName}</div>
-            <div className="text-gray-500 text-sm">{record.email}</div>
+      render: (_, record) => {
+        const hasAvatar = record.avatar && record.avatar.trim() !== "";
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar
+              size={40}
+              src={hasAvatar ? record.avatar : undefined}
+              icon={!hasAvatar && <UserOutlined />}
+              className="bg-blue-500"
+            />
+            <div>
+              <div className="font-medium">{record.fullName}</div>
+              <div className="text-gray-500 text-sm">{record.email}</div>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Số điện thoại",
@@ -221,6 +227,7 @@ const UserListPage = () => {
               onClear={() => {
                 setSearch("");
               }}
+              size="large"
             />
             <Select
               placeholder="Lọc theo vai trò"
@@ -232,8 +239,17 @@ const UserListPage = () => {
                 { value: "USER", label: "User" },
                 { value: "ADMIN", label: "Admin" },
               ]}
+              size="large"
             />
           </Space>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate("/users/create")}
+            size="large"
+          >
+            Thêm tài khoản
+          </Button>
         </div>
 
         <Table
