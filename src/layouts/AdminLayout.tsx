@@ -16,6 +16,7 @@ import {
   ShoppingOutlined,
   GiftOutlined,
   TeamOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -62,6 +63,11 @@ const AdminLayout = () => {
       key: "/users",
       icon: <TeamOutlined />,
       label: <Link to="/users">Users</Link>,
+    },
+    {
+      key: "/orders",
+      icon: <FileTextOutlined />,
+      label: <Link to="/orders">Orders</Link>,
     },
   ];
 
