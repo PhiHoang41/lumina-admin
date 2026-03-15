@@ -10,6 +10,7 @@ export interface Coupon {
   maxDiscountAmount?: number;
   usageLimit?: number;
   usedCount: number;
+  allowMultipleUsePerUser?: boolean;
   validFrom: string;
   validTo: string;
   status: "ACTIVE" | "INACTIVE" | "EXPIRED";
@@ -25,6 +26,7 @@ export interface CouponFormData {
   minOrderAmount?: number;
   maxDiscountAmount?: number;
   usageLimit?: number;
+  allowMultipleUsePerUser?: boolean;
   validFrom: string;
   validTo: string;
   status?: "ACTIVE" | "INACTIVE" | "EXPIRED";

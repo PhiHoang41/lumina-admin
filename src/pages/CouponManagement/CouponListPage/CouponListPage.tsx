@@ -153,6 +153,18 @@ const CouponListPage = () => {
       },
     },
     {
+      title: "Mỗi user",
+      dataIndex: "allowMultipleUsePerUser",
+      key: "allowMultipleUsePerUser",
+      width: 110,
+      align: "center",
+      render: (allowMultipleUsePerUser: boolean) => (
+        <Tag color={allowMultipleUsePerUser ? "blue" : "default"}>
+          {allowMultipleUsePerUser ? "Nhiều lần" : "1 lần"}
+        </Tag>
+      ),
+    },
+    {
       title: "Ngày hiệu lực",
       key: "validDate",
       width: 200,
