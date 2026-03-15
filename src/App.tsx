@@ -10,6 +10,8 @@ import CouponListPage from "./pages/CouponManagement/CouponListPage/CouponListPa
 import CouponFormPage from "./pages/CouponManagement/CouponFormPage/CouponFormPage";
 import UserListPage from "./pages/UserManagement/UserListPage/UserListPage";
 import UserFormPage from "./pages/UserManagement/UserFormPage/UserFormPage";
+import OrdersListPage from "./pages/OrderManagement/OrdersListPage/OrdersListPage";
+import OrderDetailPage from "./pages/OrderManagement/OrderDetailPage/OrderDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -81,6 +83,14 @@ const App = () => {
         {
           path: "users/edit/:id",
           element: <UserFormPage />,
+        },
+        {
+          path: "orders",
+          element: <OrdersListPage />,
+        },
+        {
+          path: "orders/:id",
+          element: <OrderDetailPage />,
         },
       ],
     },
