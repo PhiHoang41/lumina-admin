@@ -11,6 +11,7 @@ import {
   message,
   Space,
   DatePicker,
+  Switch,
 } from "antd";
 import { ArrowLeftOutlined, SaveOutlined } from "@ant-design/icons";
 import PageTitle from "../../../components/PageTitle/PageTitle";
@@ -47,6 +48,7 @@ const CouponFormPage = () => {
         minOrderAmount: coupon.minOrderAmount,
         maxDiscountAmount: coupon.maxDiscountAmount,
         usageLimit: coupon.usageLimit,
+        allowMultipleUsePerUser: coupon.allowMultipleUsePerUser,
         validFrom: dayjs(coupon.validFrom),
         validTo: dayjs(coupon.validTo),
         status: coupon.status,
@@ -87,6 +89,7 @@ const CouponFormPage = () => {
       minOrderAmount: values.minOrderAmount || 0,
       maxDiscountAmount: values.maxDiscountAmount,
       usageLimit: values.usageLimit,
+      allowMultipleUsePerUser: values.allowMultipleUsePerUser || false,
       validFrom: values.validFrom.toISOString(),
       validTo: values.validTo.toISOString(),
       status: values.status,
@@ -137,6 +140,7 @@ const CouponFormPage = () => {
           initialValues={{
             type: "PERCENTAGE",
             minOrderAmount: 0,
+            allowMultipleUsePerUser: false,
             status: "ACTIVE",
           }}
         >
@@ -240,6 +244,18 @@ const CouponFormPage = () => {
               className="w-full!"
               min={0}
               placeholder="Không giới hạn"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Cho phép sử dụng nhiều lần"
+            name="allowMultipleUsePerUser"
+            valuePropName="checked"
+            tooltip="Nếu bật, cùng một user có thể sử dụng coupon này nhiều lần. Nếu tắt, mỗi user chỉ được sử dụng một lần."
+          >
+            <Switch
+              checkedChildren="Bật"
+              unCheckedChildren="Tắt"
             />
           </Form.Item>
 
