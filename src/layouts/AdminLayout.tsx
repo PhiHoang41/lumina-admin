@@ -42,32 +42,32 @@ const AdminLayout = () => {
     {
       key: "/dashboard",
       icon: <DashboardOutlined />,
-      label: <Link to="/dashboard">Dashboard</Link>,
+      label: <Link to="/dashboard">Bảng điều khiển</Link>,
     },
     {
       key: "/categories",
       icon: <AppstoreOutlined />,
-      label: <Link to="/categories">Categories</Link>,
+      label: <Link to="/categories">Danh mục</Link>,
     },
     {
       key: "/products",
       icon: <ShoppingOutlined />,
-      label: <Link to="/products">Products</Link>,
+      label: <Link to="/products">Sản phẩm</Link>,
     },
     {
       key: "/coupons",
       icon: <GiftOutlined />,
-      label: <Link to="/coupons">Coupons</Link>,
+      label: <Link to="/coupons">Mã giảm giá</Link>,
     },
     {
       key: "/users",
       icon: <TeamOutlined />,
-      label: <Link to="/users">Users</Link>,
+      label: <Link to="/users">Người dùng</Link>,
     },
     {
       key: "/orders",
       icon: <FileTextOutlined />,
-      label: <Link to="/orders">Orders</Link>,
+      label: <Link to="/orders">Đơn hàng</Link>,
     },
   ];
 
@@ -87,7 +87,7 @@ const AdminLayout = () => {
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      label: "Logout",
+      label: "Đăng xuất",
       onClick: handleLogout,
     },
   ];
