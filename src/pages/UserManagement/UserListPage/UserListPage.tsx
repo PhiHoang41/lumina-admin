@@ -31,6 +31,7 @@ import {
   Select,
   Avatar,
   Form,
+  Switch,
 } from "antd";
 import {
   SearchOutlined,
@@ -40,6 +41,7 @@ import {
   UserOutlined,
   PlusOutlined,
   LockOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuProps } from "antd";
@@ -55,6 +57,7 @@ const UserListPage = () => {
   });
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("");
+  const [showDeleted, setShowDeleted] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [changePasswordForm] = Form.useForm();
@@ -66,13 +69,14 @@ const UserListPage = () => {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["users", pagination.current, pagination.pageSize, debouncedSearch, roleFilter],
+    queryKey: ["users", pagination.current, pagination.pageSize, debouncedSearch, roleFilter, showDeleted],
     queryFn: () =>
       userService.getUsers({
         page: pagination.current,
         limit: pagination.pageSize,
         search: debouncedSearch || undefined,
         role: roleFilter || undefined,
+        showDeleted,
       }),
   });
 
@@ -98,6 +102,17 @@ const UserListPage = () => {
     },
     onError: (error: any) => {
       message.error(error.response?.data?.message || "Lỗi khi xóa tài khoản");
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: (id: string) => userService.restoreUser(id),
+    onSuccess: () => {
+      message.success("Khôi phục tài khoản thành công!");
+      refetch();
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || "Lỗi khi khôi phục tài khoản");
     },
   });
 
@@ -137,6 +152,19 @@ const UserListPage = () => {
 
   const getActionMenu = (record: User): MenuProps => {
     const isCurrentUser = currentUser?._id === record._id;
+
+    if (record.deletedAt) {
+      return {
+        items: [
+          {
+            key: "restore",
+            icon: <UndoOutlined />,
+            label: "Khôi phục",
+            onClick: () => restoreMutation.mutate(record._id),
+          },
+        ],
+      };
+    }
 
     return {
       items: [
@@ -275,6 +303,16 @@ const UserListPage = () => {
               ]}
               size="large"
             />
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Hiện đã xóa</span>
+              <Switch
+                checked={showDeleted}
+                onChange={(val) => {
+                  setShowDeleted(val);
+                  setPagination({ ...pagination, current: 1 });
+                }}
+              />
+            </div>
           </Space>
           <Button
             type="primary"
@@ -291,6 +329,7 @@ const UserListPage = () => {
           dataSource={usersData?.data?.users || []}
           rowKey="_id"
           loading={isLoading}
+          rowClassName={(record) => record.deletedAt ? "bg-red-50" : ""}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,

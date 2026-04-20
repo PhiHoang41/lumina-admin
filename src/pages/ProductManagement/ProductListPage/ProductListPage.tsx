@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, Table, Button, Tag, Dropdown, Modal, message } from "antd";
+import { Card, Table, Button, Tag, Dropdown, Modal, message, Switch } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   MoreOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuProps } from "antd";
@@ -18,15 +19,17 @@ const ProductListPage = () => {
     current: 1,
     pageSize: 10,
   });
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const navigate = useNavigate();
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["products", pagination.current, pagination.pageSize],
+    queryKey: ["products", pagination.current, pagination.pageSize, showDeleted],
     queryFn: () =>
       productService.getProducts({
         page: pagination.current,
         limit: pagination.pageSize,
+        showDeleted,
       }),
   });
 
@@ -41,6 +44,17 @@ const ProductListPage = () => {
     },
     onError: (error: any) => {
       message.error(error.response?.data?.message || "Lỗi khi xóa sản phẩm");
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: productService.restoreProduct,
+    onSuccess: () => {
+      message.success("Khôi phục sản phẩm thành công!");
+      refetch();
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || "Lỗi khi khôi phục sản phẩm");
     },
   });
 
@@ -62,6 +76,18 @@ const ProductListPage = () => {
   };
 
   const getActionMenu = (record: Product): MenuProps => {
+    if (record.deletedAt) {
+      return {
+        items: [
+          {
+            key: "restore",
+            icon: <UndoOutlined />,
+            label: "Khôi phục",
+            onClick: () => restoreMutation.mutate(record._id),
+          },
+        ],
+      };
+    }
     return {
       items: [
         {
@@ -159,7 +185,7 @@ const ProductListPage = () => {
       dataIndex: "isActive",
       width: 110,
       render: (isActive: boolean) => (
-        <Tag color={isActive ? "green" : "red"} className="capitalize">
+        <Tag color={isActive ? "green" : "red"}>
           {isActive ? "Active" : "Inactive"}
         </Tag>
       ),
@@ -183,7 +209,17 @@ const ProductListPage = () => {
       <Card>
         {/* Header */}
         <div className="mb-4">
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Hiện đã xóa</span>
+              <Switch
+                checked={showDeleted}
+                onChange={(val) => {
+                  setShowDeleted(val);
+                  setPagination({ ...pagination, current: 1 });
+                }}
+              />
+            </div>
             <Button
               type="primary"
               size="large"
@@ -207,6 +243,7 @@ const ProductListPage = () => {
             dataSource={products}
             rowKey="_id"
             loading={isLoading}
+            rowClassName={(record) => record.deletedAt ? "bg-red-50" : ""}
             pagination={{
               current: pagination.current,
               pageSize: pagination.pageSize,

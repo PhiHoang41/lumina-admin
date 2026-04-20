@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, Table, Button, Tag, Dropdown, Modal, message } from "antd";
+import { Card, Table, Button, Tag, Dropdown, Modal, message, Switch } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   MoreOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuProps } from "antd";
@@ -19,15 +20,17 @@ const CouponListPage = () => {
     current: 1,
     pageSize: 10,
   });
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const navigate = useNavigate();
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["coupons", pagination.current, pagination.pageSize],
+    queryKey: ["coupons", pagination.current, pagination.pageSize, showDeleted],
     queryFn: () =>
       couponService.getCoupons({
         page: pagination.current,
         limit: pagination.pageSize,
+        showDeleted,
       }),
   });
 
@@ -42,6 +45,17 @@ const CouponListPage = () => {
     },
     onError: (error: any) => {
       message.error(error.response?.data?.message || "Lỗi khi xóa mã giảm giá");
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: couponService.restoreCoupon,
+    onSuccess: () => {
+      message.success("Khôi phục mã giảm giá thành công!");
+      refetch();
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || "Lỗi khi khôi phục mã giảm giá");
     },
   });
 
@@ -63,6 +77,18 @@ const CouponListPage = () => {
   };
 
   const getActionMenu = (record: any): MenuProps => {
+    if (record.deletedAt) {
+      return {
+        items: [
+          {
+            key: "restore",
+            icon: <UndoOutlined />,
+            label: "Khôi phục",
+            onClick: () => restoreMutation.mutate(record._id),
+          },
+        ],
+      };
+    }
     return {
       items: [
         {
@@ -212,7 +238,17 @@ const CouponListPage = () => {
       <Card>
         {/* Header */}
         <div className="mb-4">
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Hiện đã xóa</span>
+              <Switch
+                checked={showDeleted}
+                onChange={(val) => {
+                  setShowDeleted(val);
+                  setPagination({ ...pagination, current: 1 });
+                }}
+              />
+            </div>
             <Button
               type="primary"
               size="large"
@@ -236,6 +272,7 @@ const CouponListPage = () => {
             dataSource={coupons}
             rowKey="_id"
             loading={isLoading}
+            rowClassName={(record) => record.deletedAt ? "bg-red-50" : ""}
             pagination={{
               current: pagination.current,
               pageSize: pagination.pageSize,

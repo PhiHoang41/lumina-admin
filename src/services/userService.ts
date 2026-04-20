@@ -8,6 +8,7 @@ export interface User {
   avatar?: string;
   address?: string;
   role: "USER" | "ADMIN";
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,11 +48,12 @@ interface GetUsersParams {
   limit?: number;
   search?: string;
   role?: string;
+  showDeleted?: boolean;
 }
 
 const userService = {
   getUsers: async (params: GetUsersParams = {}): Promise<UsersResponse> => {
-    const { page = 1, limit = 10, search, role } = params;
+    const { page = 1, limit = 10, search, role, showDeleted } = params;
 
     const response = await api.get<UsersResponse>("/users", {
       params: {
@@ -59,6 +61,7 @@ const userService = {
         limit,
         ...(search && { search }),
         ...(role && { role }),
+        ...(showDeleted && { showDeleted: "true" }),
       },
     });
     return response.data;
@@ -75,7 +78,12 @@ const userService = {
   },
 
   deleteUser: async (id: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete<{ success: boolean; message: string }>(`/users/${id}`);
+    const response = await api.patch<{ success: boolean; message: string }>(`/users/${id}/soft-delete`);
+    return response.data;
+  },
+
+  restoreUser: async (id: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.patch<{ success: boolean; message: string }>(`/users/${id}/restore`);
     return response.data;
   },
 

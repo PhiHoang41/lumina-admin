@@ -16,6 +16,7 @@ export interface Product {
   variants: any[];
   isActive: boolean;
   totalStock: number;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,6 +63,7 @@ const productService = {
     isActive?: boolean;
     sortBy?: string;
     sortOrder?: string;
+    showDeleted?: boolean;
   }): Promise<ProductsResponse> => {
     const response = await api.get<ProductsResponse>("/products", {
       params,
@@ -90,8 +92,17 @@ const productService = {
   deleteProduct: async (
     id: string,
   ): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete<{ success: boolean; message: string }>(
-      `/products/${id}`,
+    const response = await api.patch<{ success: boolean; message: string }>(
+      `/products/${id}/soft-delete`,
+    );
+    return response.data;
+  },
+
+  restoreProduct: async (
+    id: string,
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await api.patch<{ success: boolean; message: string }>(
+      `/products/${id}/restore`,
     );
     return response.data;
   },

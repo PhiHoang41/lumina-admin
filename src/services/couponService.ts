@@ -14,6 +14,7 @@ export interface Coupon {
   validFrom: string;
   validTo: string;
   status: "ACTIVE" | "INACTIVE" | "EXPIRED";
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -56,6 +57,7 @@ const couponService = {
   getCoupons: async (params?: {
     page?: number;
     limit?: number;
+    showDeleted?: boolean;
   }): Promise<CouponsResponse> => {
     const response = await api.get<CouponsResponse>("/coupons", { params });
     return response.data;
@@ -82,8 +84,17 @@ const couponService = {
   deleteCoupon: async (
     id: string,
   ): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete<{ success: boolean; message: string }>(
-      `/coupons/${id}`,
+    const response = await api.patch<{ success: boolean; message: string }>(
+      `/coupons/${id}/soft-delete`,
+    );
+    return response.data;
+  },
+
+  restoreCoupon: async (
+    id: string,
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await api.patch<{ success: boolean; message: string }>(
+      `/coupons/${id}/restore`,
     );
     return response.data;
   },
