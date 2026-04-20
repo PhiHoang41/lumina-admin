@@ -10,7 +10,7 @@ import PageTitle from "../../components/PageTitle/PageTitle";
 const DashboardPage = () => {
   return (
     <div>
-      <PageTitle title="Dashboard" />
+      <PageTitle title="Bảng điều khiển" />
       <Row gutter={16}>
         <Col span={6}>
           <Card>
